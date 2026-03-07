@@ -1,0 +1,34 @@
+Ribbon
+riedl.earth SERVICES SELECTED WORK CONTACT
+Header
+Spatial analysis for climate adaptation.
+Experience
+MSc Geography - Climate Science Lab
+BSc Environmental Science and Management - Climate Change focus
+Services
+What I Do
+Geospatial expertise applied to climate adaptation - from hazard mapping to institutional capacity, grounded in field context.
+1. Climate Vulnerability Mapping
+Extreme weather is getting worse. Some are hit harder than others. I map those geographic disparities using a composite of vulnerability indices. By layering climate hazard with social factors (income, access to services, infrastructure), the analysis reveals not just where risk exists, but who is most exposed. My multi-hazard spatial analysis utilizes CMIP6 projections, open source administrative datasets, and community input for localized and scaled 
+2. Remote Sensing for Adaptation
+Communities are already retreating from sea level rise. Prolonged drought is forcing farmers to uproot entirely. Over a billion people worldwide live in informal settlements that are particularly vulnerable to the affects of climate change. Climate mitigation is no longer the sole necessity. Adaptation is paramount and remote sensing can help. I use Sentinel, Landsat and Earth Engine to understand and communicate realities on the ground. 
+3. GIS Capacity Building
+While most of the time you'll find me behind the computer screen, my true passion is talking to people. Giving people the tools to perform these analyses will help them strengthen their communities. I have conducted trainings to build GIS capacity both remotely and in person on five continents. From data management and spatial workflows to monitoring and evaluation using GIS tools.
+Experience and Organizational Clients
+*logos*
+Climate Analysis & Remote Sensing
+2025
+Mesoscale Frontal Wave Analysis – Measuring Impact
+Performed analysis on the effects of mesoscale frontal waves on large-scale storms in the North Pacific Basin using NASA's MERRA2 atmospheric data. MFWs were thought to modulate storm dynamics but it had not been proven. My study showed a statistically significant increase in storm duration and intensity. Additional analyses were performed for other basins and for storms impacting California. First author in partnership with Portland State University and the Center for Western Weather and Water Extremes, funded by the U.S. Army Corps of Engineers.
+*image: selected_work_MFW, link: https://pdxscholar.library.pdx.edu/open_access_etds/6945/
+
+Vulnerability Mapping
+2024
+Madagascar – Layered Land Tenure Vulnerability Analysis
+Combined on-the-ground fieldwork in remote regions of Madagascar with technical expertise to conduct a countrywide, high-resolution geospatial risk analysis. Built a methodological workflow to replicate the analysis in other countries throughout Africa. First author on a fact sheet for CIFOR–ICRAF with funding support from GIZ.
+*image: selected_work_land_tenure, link: https://www.cifor-icraf.org/publications/pdf/factsheets/39361-FLR-Factsheet.pdf
+Capacity Building
+2024
+Kenya & Global – Multilayered Vulnerability Assessment and GIS Workshops
+Non-author contributor to UN-Habitat’s Multilayered Vulnerability Analysis Handbook. Assisted with implementation of the analysis with country offices on three continents. Delivered supplemental workshops on GIS and spatial analysis.
+*image: selected_work_MVA, link: https://unhabitat.org/sites/default/files/2024/11/un-habitat_rise_up_multilayered_vulnerability_assessment_handbook.pdf
