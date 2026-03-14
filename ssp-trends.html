@@ -1,0 +1,1176 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SSP Trend Analysis | Riedl Earth</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,600;0,9..40,700;1,9..40,400&display=swap" rel="stylesheet">
+<style>
+* { margin:0; padding:0; box-sizing:border-box; }
+
+:root {
+  --bg-primary: #0c0f14;
+  --bg-card: #12151b;
+  --bg-card-border: #1e2128;
+  --bg-row-alt: rgba(255,255,255,0.015);
+  --text-primary: #e8e6e1;
+  --text-secondary: #8a8783;
+  --text-muted: #5a5754;
+  --text-dim: #3a3834;
+  --border-subtle: #1a1d22;
+  --green: #2ecc71;
+  --red: #e74c3c;
+  --ssp1: #27ae60;
+  --ssp2: #2980b9;
+  --ssp3: #c0392b;
+  --ssp4: #8e44ad;
+  --ssp5: #d35400;
+}
+
+body {
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+  line-height: 1.5;
+}
+
+/* ── Site Nav ─────────────────────────────────────────────── */
+
+.site-nav {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: rgba(12, 15, 20, 0.96);
+  border-bottom: 1px solid var(--bg-card-border);
+  backdrop-filter: blur(6px);
+}
+
+.site-nav-inner {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 24px;
+  height: 52px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.site-nav-brand {
+  font-family: 'DM Sans', system-ui, sans-serif;
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  text-decoration: none;
+  letter-spacing: -0.01em;
+}
+
+.site-nav-links {
+  list-style: none;
+  display: flex;
+  gap: 2rem;
+}
+
+.site-nav-links a {
+  font-size: 0.78rem;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  text-decoration: none;
+  transition: color 0.2s;
+}
+
+.site-nav-links a:hover {
+  color: var(--text-primary);
+}
+
+.site-nav-links a.active {
+  color: var(--text-secondary);
+}
+
+/* ── Visualization ────────────────────────────────────────── */
+
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 48px 24px;
+}
+
+.header { margin-bottom: 32px; }
+
+.header h1 {
+  font-size: clamp(22px, 3vw, 28px);
+  font-weight: 700;
+  letter-spacing: -0.5px;
+  margin-bottom: 6px;
+}
+
+.header .subtitle {
+  font-size: 14px;
+  color: var(--text-muted);
+}
+
+.header .subtitle span { color: var(--green); }
+
+.legend-row {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-bottom: 8px;
+  align-items: center;
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 12px;
+  color: var(--text-secondary);
+}
+
+.legend-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+
+.legend-divider { width: 1px; height: 16px; background: var(--bg-card-border); }
+
+.trend-legend {
+  display: flex;
+  gap: 14px;
+  flex-wrap: wrap;
+  margin-bottom: 20px;
+  font-size: 12px;
+  color: var(--text-secondary);
+  padding: 6px 12px;
+  background: var(--bg-card);
+  border-radius: 8px;
+  border: 1px solid var(--bg-card-border);
+}
+
+.trend-legend-item { display: flex; align-items: center; gap: 4px; }
+
+/* --- Filter controls --- */
+.filters {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-bottom: 16px;
+}
+
+.filter-btn {
+  padding: 5px 12px;
+  font-size: 12px;
+  border: 1px solid var(--bg-card-border);
+  border-radius: 6px;
+  background: transparent;
+  color: var(--text-secondary);
+  cursor: pointer;
+  font-family: inherit;
+  transition: all 0.15s;
+}
+
+.filter-btn:hover { border-color: var(--text-muted); color: var(--text-primary); }
+.filter-btn.active { background: rgba(255,255,255,0.06); color: var(--text-primary); border-color: var(--text-muted); }
+
+/* --- Columns --- */
+.columns {
+  display: flex;
+  gap: 2px;
+  margin-bottom: 24px;
+  overflow-x: auto;
+}
+
+.col {
+  flex: 1;
+  min-width: 180px;
+  background: var(--bg-card);
+  border-radius: 10px;
+  overflow: hidden;
+  border: 1px solid var(--bg-card-border);
+}
+
+.col-header {
+  padding: 10px 12px 8px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  border-bottom: 1px solid var(--bg-card-border);
+}
+
+.col-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
+.col-name { font-size: 15px; font-weight: 600; letter-spacing: -0.3px; }
+.col-subtitle { font-size: 10.5px; color: var(--text-muted); margin-left: auto; white-space: nowrap; }
+
+.col-scores {
+  padding: 6px 12px;
+  display: flex;
+  gap: 10px;
+  font-size: 11px;
+  font-family: monospace;
+  border-bottom: 1px solid var(--border-subtle);
+}
+
+.col-scores .up { color: var(--green); }
+.col-scores .down { color: var(--red); }
+.col-scores .flat { color: var(--text-muted); }
+
+.score-bar {
+  margin: 0 12px 4px;
+  height: 3px;
+  border-radius: 2px;
+  display: flex;
+  gap: 1px;
+  overflow: hidden;
+}
+
+.score-bar .seg { height: 100%; }
+
+.section-divider {
+  padding: 4px 12px 3px;
+  font-size: 9px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: var(--text-dim);
+  border-top: 1px solid var(--border-subtle);
+  margin-top: 2px;
+}
+
+.qual-row {
+  padding: 4px 12px 4px 8px;
+  font-size: 11.5px;
+  line-height: 1.45;
+  color: var(--text-secondary);
+  display: flex;
+  align-items: flex-start;
+  gap: 5px;
+  transition: color 0.1s;
+  cursor: default;
+}
+
+.qual-row:hover { color: var(--text-primary); }
+.qual-row.alt { background: var(--bg-row-alt); }
+.qual-row.highlight { background: rgba(241,196,15,0.06); color: var(--text-primary); }
+.qual-row.dim { opacity: 0.3; }
+
+.qual-text { flex: 1; }
+
+.trend-icon { flex-shrink: 0; width: 14px; text-align: center; margin-top: 1px; font-size: 8px; }
+
+.dots-pair { display: flex; gap: 3px; flex-shrink: 0; margin-top: 3px; }
+.dots-pair .d { width: 6px; height: 6px; border-radius: 50%; }
+
+/* --- Country Spectrum --- */
+.spectrum-section {
+  background: var(--bg-card);
+  border-radius: 10px;
+  padding: 20px 24px 24px;
+  border: 1px solid var(--bg-card-border);
+  margin-bottom: 16px;
+}
+
+.spectrum-title {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-secondary);
+  margin-bottom: 4px;
+}
+
+.spectrum-subtitle {
+  font-size: 11px;
+  color: var(--text-muted);
+  margin-bottom: 16px;
+}
+
+.spectrum-bar {
+  display: flex;
+  height: 28px;
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+.spectrum-zone {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 10px;
+  font-weight: 600;
+  color: rgba(255,255,255,0.8);
+}
+
+.spectrum-labels {
+  display: flex;
+  margin-top: 3px;
+  margin-bottom: 12px;
+}
+
+.spectrum-labels span {
+  flex: 1;
+  text-align: center;
+  font-size: 9px;
+  color: var(--text-dim);
+}
+
+.country-rows {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-top: 8px;
+}
+
+.country-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  height: 26px;
+}
+
+.country-name {
+  width: 130px;
+  font-size: 12px;
+  font-weight: 500;
+  flex-shrink: 0;
+  text-align: right;
+  white-space: nowrap;
+}
+
+.country-track {
+  flex: 1;
+  height: 26px;
+  position: relative;
+  border-radius: 4px;
+  background: rgba(255,255,255,0.02);
+}
+
+.country-dot {
+  position: absolute;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  border: 2px solid var(--bg-card);
+  z-index: 2;
+}
+
+.country-range {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  height: 6px;
+  border-radius: 3px;
+  opacity: 0.25;
+}
+
+.country-best {
+  width: 46px;
+  font-size: 10px;
+  font-weight: 600;
+  font-family: monospace;
+  flex-shrink: 0;
+}
+
+.country-scores {
+  display: flex;
+  gap: 2px;
+  flex-shrink: 0;
+}
+
+.country-scores .cs {
+  width: 6px;
+  border-radius: 1px;
+}
+
+.spectrum-method {
+  font-size: 10px;
+  color: var(--text-dim);
+  margin-top: 14px;
+  padding-top: 10px;
+  border-top: 1px solid var(--border-subtle);
+  line-height: 1.5;
+}
+
+/* --- Summary --- */
+.summary {
+  background: var(--bg-card);
+  border-radius: 10px;
+  padding: 20px 24px;
+  border: 1px solid var(--bg-card-border);
+}
+
+.summary-title {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-secondary);
+  margin-bottom: 14px;
+}
+
+.summary-bars { display: flex; flex-direction: column; gap: 8px; }
+
+.sbar-row { display: flex; align-items: center; gap: 12px; }
+
+.sbar-label { width: 42px; font-size: 12px; font-weight: 600; flex-shrink: 0; font-family: monospace; }
+
+.sbar-track {
+  flex: 1;
+  height: 20px;
+  background: var(--border-subtle);
+  border-radius: 4px;
+  overflow: hidden;
+  display: flex;
+}
+
+.sbar-fill {
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 10px;
+  font-weight: 600;
+  font-family: monospace;
+}
+
+.sbar-fill.up { background: rgba(46,204,113,0.25); color: var(--green); }
+.sbar-fill.stable { background: rgba(255,255,255,0.04); color: var(--text-muted); }
+.sbar-fill.down { background: rgba(231,76,60,0.25); color: var(--red); }
+
+.footer {
+  margin-top: 24px;
+  font-size: 11px;
+  color: var(--text-dim);
+}
+
+@media (max-width: 768px) {
+  .columns { flex-direction: column; }
+  .col { min-width: 100%; }
+  .container { padding: 24px 16px; }
+}
+
+/* --- Methodology --- */
+.method-section {
+  margin-top: 24px;
+  background: var(--bg-card);
+  border-radius: 10px;
+  padding: 20px 24px;
+  border: 1px solid var(--bg-card-border);
+}
+
+.method-title {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-secondary);
+  margin-bottom: 4px;
+}
+
+.method-subtitle {
+  font-size: 11px;
+  color: var(--text-muted);
+  margin-bottom: 18px;
+}
+
+.method-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 8px 20px;
+  margin-bottom: 20px;
+}
+
+.method-item {
+  padding: 9px 12px;
+  background: rgba(255,255,255,0.02);
+  border-radius: 6px;
+  border: 1px solid var(--border-subtle);
+}
+
+.method-item-num {
+  font-size: 9px;
+  font-family: monospace;
+  color: var(--text-dim);
+  margin-bottom: 2px;
+  letter-spacing: 0.5px;
+}
+
+.method-item-name {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: 3px;
+}
+
+.method-item-desc {
+  font-size: 10px;
+  color: var(--text-muted);
+  line-height: 1.5;
+  margin-bottom: 3px;
+}
+
+.method-item-maps {
+  font-size: 10px;
+  color: var(--text-dim);
+  line-height: 1.4;
+}
+
+.method-scoring {
+  border-top: 1px solid var(--border-subtle);
+  padding-top: 14px;
+}
+
+.method-scoring-title {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text-secondary);
+  margin-bottom: 10px;
+}
+
+.method-ssp-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 8px;
+  margin-bottom: 14px;
+}
+
+.method-ssp-card {
+  padding: 8px 10px;
+  background: rgba(255,255,255,0.02);
+  border-radius: 6px;
+  border: 1px solid var(--border-subtle);
+}
+
+.method-ssp-name {
+  font-size: 11px;
+  font-weight: 600;
+  margin-bottom: 5px;
+}
+
+.method-ssp-factors {
+  font-size: 9.5px;
+  color: var(--text-muted);
+  line-height: 1.65;
+}
+
+.method-calc {
+  font-size: 10px;
+  color: var(--text-dim);
+  line-height: 1.65;
+  padding-top: 10px;
+  border-top: 1px solid var(--border-subtle);
+}
+
+@media (max-width: 768px) {
+  .method-grid { grid-template-columns: 1fr; }
+  .method-ssp-grid { grid-template-columns: repeat(2, 1fr); }
+}
+
+/* --- Emissions Chart --- */
+.chart-section {
+  margin-top: 24px;
+  background: var(--bg-card);
+  border-radius: 10px;
+  padding: 20px 24px;
+  border: 1px solid var(--bg-card-border);
+}
+
+.chart-title {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-secondary);
+  margin-bottom: 3px;
+}
+
+.chart-subtitle {
+  font-size: 11px;
+  color: var(--text-muted);
+  margin-bottom: 14px;
+}
+
+.chart-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px 18px;
+  margin-bottom: 12px;
+  font-size: 11px;
+  color: var(--text-secondary);
+}
+
+.chart-legend-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+#emissions-svg {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+</style>
+</head>
+<body>
+
+<header class="site-nav">
+  <nav class="site-nav-inner">
+    <a href="index.html" class="site-nav-brand">riedl.earth</a>
+    <ul class="site-nav-links">
+      <li><a href="index.html#services">Services</a></li>
+      <li><a href="index.html#work">Selected Work</a></li>
+      <li><a href="index.html#maps">Maps</a></li>
+      <li><a href="index.html#contact">Contact</a></li>
+    </ul>
+  </nav>
+</header>
+
+<div class="container">
+  <div class="header">
+    <h1>Shared Socioeconomic Pathways: which future are we trending toward?</h1>
+    <div class="subtitle">54 qualities mapped across SSP1–SSP5, tagged with <span>current directional trends</span></div>
+  </div>
+
+  <div class="legend-row">
+    <div class="legend-item"><div class="legend-dot" style="background:var(--ssp1)"></div>SSP1</div>
+    <div class="legend-item"><div class="legend-dot" style="background:var(--ssp2)"></div>SSP2</div>
+    <div class="legend-item"><div class="legend-dot" style="background:var(--ssp3)"></div>SSP3</div>
+    <div class="legend-item"><div class="legend-dot" style="background:var(--ssp4)"></div>SSP4</div>
+    <div class="legend-item"><div class="legend-dot" style="background:var(--ssp5)"></div>SSP5</div>
+    <div class="legend-divider"></div>
+    <div class="legend-item">
+      <span style="display:flex;gap:2px;">
+        <span class="legend-dot" style="background:var(--ssp3);width:6px;height:6px;"></span>
+        <span class="legend-dot" style="background:var(--ssp5);width:6px;height:6px;"></span>
+      </span>
+      Dot pairs = shared quality
+    </div>
+  </div>
+
+  <div class="trend-legend">
+    <div class="trend-legend-item"><span style="color:var(--green);font-size:10px;">&#9650;</span> Strengthening now</div>
+    <div class="trend-legend-item"><span style="color:var(--red);font-size:10px;">&#9660;</span> Weakening now</div>
+    <div class="trend-legend-item"><span style="color:var(--text-muted);font-size:10px;">&#9644;</span> Stable / mixed</div>
+  </div>
+
+  <div class="filters" id="filters">
+    <button class="filter-btn active" data-filter="all">All</button>
+    <button class="filter-btn" data-filter="up">Strengthening only</button>
+    <button class="filter-btn" data-filter="down">Weakening only</button>
+    <button class="filter-btn" data-filter="stable">Stable only</button>
+  </div>
+
+  <div class="columns" id="columns"></div>
+  <div class="spectrum-section" id="spectrum"></div>
+  <div class="summary" id="summary"></div>
+
+  <div class="chart-section">
+    <div class="chart-title">Global GHG emission projections by SSP pathway</div>
+    <div class="chart-subtitle">GtCO₂eq/yr &nbsp;·&nbsp; Historical 1990–2023 &nbsp;·&nbsp; Projections 2023–2100 &nbsp;·&nbsp; Sources: IPCC AR6, IEA WEO 2024</div>
+    <div class="chart-legend" id="chart-legend"></div>
+    <svg id="emissions-svg" viewBox="0 0 900 300" preserveAspectRatio="xMidYMid meet"></svg>
+  </div>
+
+  <div class="method-section">
+    <div class="method-title">Methodology &amp; Data Sources</div>
+    <div class="method-subtitle">Country SSP alignment is derived from 10 public indicators, each normalized 0–1 and weighted against SSP archetype profiles.</div>
+
+    <div class="method-grid">
+
+      <div class="method-item">
+        <div class="method-item-num">Indicator 01</div>
+        <div class="method-item-name">Income Inequality — Gini Index</div>
+        <div class="method-item-desc">0 = perfect equality, 100 = perfect inequality.</div>
+        <div class="method-item-maps">Maps to: "Reducing inequality" (SSP1) · "Inequalities persist/worsen" (SSP3/4) · Source: World Bank</div>
+      </div>
+
+      <div class="method-item">
+        <div class="method-item-num">Indicator 02</div>
+        <div class="method-item-name">Fossil Fuel Share of Primary Energy (%)</div>
+        <div class="method-item-desc">Percentage of total energy from coal, oil, and gas.</div>
+        <div class="method-item-maps">Maps to: "Fossil fuel dependence" (SSP3/5) · "Lower resource intensity" (SSP1) · Source: Our World in Data</div>
+      </div>
+
+      <div class="method-item">
+        <div class="method-item-num">Indicator 03</div>
+        <div class="method-item-name">Human Development Index (HDI)</div>
+        <div class="method-item-desc">0–1 composite of life expectancy, education, and income.</div>
+        <div class="method-item-maps">Maps to: "Strong education &amp; health investment" (SSP1/5) · "Poorly educated societies" (SSP4) · Source: UNDP</div>
+      </div>
+
+      <div class="method-item">
+        <div class="method-item-num">Indicator 04</div>
+        <div class="method-item-name">Governance Quality — V-Dem Liberal Democracy Index</div>
+        <div class="method-item-desc">0–1 scale; higher = more democratic and open governance.</div>
+        <div class="method-item-maps">Maps to: "Improving global commons management" (SSP1) · "Rising nationalism" (SSP3) · Source: V-Dem / World Bank WGI</div>
+      </div>
+
+      <div class="method-item">
+        <div class="method-item-num">Indicator 05</div>
+        <div class="method-item-name">Trade Openness (Trade as % of GDP)</div>
+        <div class="method-item-desc">(Exports + Imports) / GDP × 100.</div>
+        <div class="method-item-maps">Maps to: "Integrated global markets" (SSP5) · "Regional rivalry/nationalism" (SSP3) · Source: World Bank</div>
+      </div>
+
+      <div class="method-item">
+        <div class="method-item-num">Indicator 06</div>
+        <div class="method-item-name">Renewable Energy Share (%)</div>
+        <div class="method-item-desc">Percentage of primary energy from solar, wind, hydro, and other renewables.</div>
+        <div class="method-item-maps">Maps to: "Diversified energy" (SSP4) · "Sustainability focus" (SSP1) · Source: Our World in Data</div>
+      </div>
+
+      <div class="method-item">
+        <div class="method-item-num">Indicator 07</div>
+        <div class="method-item-name">GDP Per Capita Growth Rate (5yr avg, annual %)</div>
+        <div class="method-item-desc">Speed of economic development averaged over five years.</div>
+        <div class="method-item-maps">Maps to: "Rapid economic growth" (SSP5) · "Slow economic development" (SSP3) · Source: World Bank</div>
+      </div>
+
+      <div class="method-item">
+        <div class="method-item-num">Indicator 08</div>
+        <div class="method-item-name">Environmental Performance Index (EPI)</div>
+        <div class="method-item-desc">0–100 composite of environmental health and ecosystem vitality.</div>
+        <div class="method-item-maps">Maps to: "Respect for environmental boundaries" (SSP1) · "Environmental degradation" (SSP3) · Source: Yale EPI 2024</div>
+      </div>
+
+      <div class="method-item">
+        <div class="method-item-num">Indicator 09</div>
+        <div class="method-item-name">Military Spending (% of GDP)</div>
+        <div class="method-item-desc">National security prioritization as a share of economic output.</div>
+        <div class="method-item-maps">Maps to: "Focus on national/regional security" (SSP3) · Source: SIPRI / World Bank</div>
+      </div>
+
+      <div class="method-item">
+        <div class="method-item-num">Indicator 10</div>
+        <div class="method-item-name">Education Spending (% of GDP)</div>
+        <div class="method-item-desc">Investment in human capital as a share of economic output.</div>
+        <div class="method-item-maps">Maps to: "Strong education investment" (SSP1/5) · "Declining investment" (SSP3) · Source: World Bank</div>
+      </div>
+
+    </div>
+
+    <div class="method-scoring">
+      <div class="method-scoring-title">SSP Alignment Scoring</div>
+      <div class="method-ssp-grid">
+        <div class="method-ssp-card">
+          <div class="method-ssp-name" style="color:#27ae60">SSP1 — Sustainability</div>
+          <div class="method-ssp-factors">+ High HDI<br>+ High EPI<br>+ High renewables<br>+ High education spending<br>− Low Gini<br>− Low fossil share<br>− Low military spending</div>
+        </div>
+        <div class="method-ssp-card">
+          <div class="method-ssp-name" style="color:#2980b9">SSP2 — Middle of the road</div>
+          <div class="method-ssp-factors">= Mid Gini<br>= Mid HDI<br>= Mid fossil share<br>= Mid governance<br>= Mid trade openness<br>= Mid EPI<br>= Mid GDP growth</div>
+        </div>
+        <div class="method-ssp-card">
+          <div class="method-ssp-name" style="color:#c0392b">SSP3 — Regional rivalry</div>
+          <div class="method-ssp-factors">+ High military spending<br>+ High fossil share<br>+ Low trade openness<br>− Low HDI<br>− Low governance<br>− Low EPI</div>
+        </div>
+        <div class="method-ssp-card">
+          <div class="method-ssp-name" style="color:#8e44ad">SSP4 — Inequality</div>
+          <div class="method-ssp-factors">+ High Gini<br>+ High GDP growth<br>+ Some renewables<br>− Low governance<br>− Large HDI / Gini gap</div>
+        </div>
+        <div class="method-ssp-card">
+          <div class="method-ssp-name" style="color:#d35400">SSP5 — Fossil-fueled dev.</div>
+          <div class="method-ssp-factors">+ High GDP growth<br>+ High trade openness<br>+ High HDI<br>+ High fossil share<br>+ High energy consumption</div>
+        </div>
+      </div>
+      <div class="method-calc">Each indicator is normalized 0–1 across all countries, then scored against each SSP archetype using the weights above. A country's final SSP score (0–1) is the weighted sum across all 10 indicators. The spectrum position is the weighted centroid — a single value from 1 (SSP1) to 5 (SSP5) based on relative SSP scores.</div>
+    </div>
+  </div>
+
+  <div class="footer">
+    SSP framework: O'Neill et al. (2017) · Trend signals: directional assessment, March 2026 · Country alignment: World Bank, UNDP, V-Dem, Yale EPI, Our World in Data, SIPRI
+  </div>
+</div>
+
+<script>
+const colors = {
+  SSP1: "var(--ssp1)", SSP2: "var(--ssp2)", SSP3: "var(--ssp3)",
+  SSP4: "var(--ssp4)", SSP5: "var(--ssp5)"
+};
+const rawColors = {
+  SSP1: "#27ae60", SSP2: "#2980b9", SSP3: "#c0392b",
+  SSP4: "#8e44ad", SSP5: "#d35400"
+};
+const titles = {
+  SSP1: "Sustainability", SSP2: "Middle of the road", SSP3: "Regional rivalry",
+  SSP4: "Inequality", SSP5: "Fossil-fueled dev."
+};
+
+const trends = {
+  "Improving global commons management":"down",
+  "Institutions slowly pursue sustainable dev goals":"stable",
+  "Rising nationalism":"up",
+  "Focus on national/regional security":"up",
+  "Regional conflicts":"up",
+  "Increasing social stratification":"up",
+  "Degrading social cohesion":"up",
+  "Conflict and unrest increase":"up",
+  "Competitive markets & participatory societies":"stable",
+  "Faith in managing social & ecological systems":"down",
+  "Openness to geoengineering":"up",
+  "Emphasis on human well-being over GDP growth":"down",
+  "Low material growth / low resource intensity":"down",
+  "Uneven development & income growth":"stable",
+  "Slow economic development":"up",
+  "Material-intensive consumption":"up",
+  "High-tech economy for connected elite":"up",
+  "Low-tech labor-intensive economy for lower class":"up",
+  "Widening gap in economic opportunity":"up",
+  "Rapid global economic growth":"stable",
+  "Increasingly integrated global markets":"down",
+  "Resource & energy intensive lifestyles":"up",
+  "Reducing inequality across & within countries":"down",
+  "Inequality persists or improves slowly":"stable",
+  "Inequalities persist or worsen":"up",
+  "Increasing disparities in political power":"up",
+  "Unequal investment in human capital":"up",
+  "Strong education & health investment":"stable",
+  "Declining investment in education & tech":"up",
+  "Poorly educated lower-income societies":"up",
+  "Strong investment in institutions & social capital":"stable",
+  "Accelerated demographic transition":"down",
+  "Moderate population growth, levels off mid-century":"stable",
+  "Low pop growth (industrialized), high (developing)":"stable",
+  "Global population peaks then declines":"stable",
+  "Lower resource & energy intensity":"down",
+  "Resource/energy use intensity declines slowly":"stable",
+  "Energy & food security prioritized regionally":"up",
+  "Diversified energy (both fossil & low-carbon)":"up",
+  "Exploitation of abundant fossil fuels":"up",
+  "Fossil fuel dependence":"up",
+  "Respect for environmental boundaries":"down",
+  "Environmental degradation with some improvements":"stable",
+  "Strong environmental degradation in some regions":"up",
+  "Env. policy focused on local/wealthy areas":"up",
+  "Local env. problems successfully managed":"stable",
+  "Low international priority for environment":"up",
+  "Inclusive development path":"down",
+  "Historical trends continue (no major shifts)":"stable",
+  "Challenges reducing vulnerability remain":"stable",
+  "Development coupled with fossil exploitation":"up",
+  "Rapid technological progress":"up",
+  "High tech development in elite sectors":"up",
+  "Innovation-driven development":"up"
+};
+
+const qualities = {
+  "Improving global commons management":["SSP1"],
+  "Institutions slowly pursue sustainable dev goals":["SSP2"],
+  "Rising nationalism":["SSP3"],
+  "Focus on national/regional security":["SSP3"],
+  "Regional conflicts":["SSP3"],
+  "Increasing social stratification":["SSP4"],
+  "Degrading social cohesion":["SSP4"],
+  "Conflict and unrest increase":["SSP4"],
+  "Competitive markets & participatory societies":["SSP5"],
+  "Faith in managing social & ecological systems":["SSP5"],
+  "Openness to geoengineering":["SSP5"],
+  "Emphasis on human well-being over GDP growth":["SSP1"],
+  "Low material growth / low resource intensity":["SSP1"],
+  "Uneven development & income growth":["SSP2"],
+  "Slow economic development":["SSP3"],
+  "Material-intensive consumption":["SSP3","SSP5"],
+  "High-tech economy for connected elite":["SSP4"],
+  "Low-tech labor-intensive economy for lower class":["SSP4"],
+  "Widening gap in economic opportunity":["SSP4"],
+  "Rapid global economic growth":["SSP5"],
+  "Increasingly integrated global markets":["SSP5"],
+  "Resource & energy intensive lifestyles":["SSP5"],
+  "Reducing inequality across & within countries":["SSP1"],
+  "Inequality persists or improves slowly":["SSP2"],
+  "Inequalities persist or worsen":["SSP3","SSP4"],
+  "Increasing disparities in political power":["SSP4"],
+  "Unequal investment in human capital":["SSP4"],
+  "Strong education & health investment":["SSP1","SSP5"],
+  "Declining investment in education & tech":["SSP3"],
+  "Poorly educated lower-income societies":["SSP4"],
+  "Strong investment in institutions & social capital":["SSP5"],
+  "Accelerated demographic transition":["SSP1"],
+  "Moderate population growth, levels off mid-century":["SSP2"],
+  "Low pop growth (industrialized), high (developing)":["SSP3"],
+  "Global population peaks then declines":["SSP5"],
+  "Lower resource & energy intensity":["SSP1"],
+  "Resource/energy use intensity declines slowly":["SSP2"],
+  "Energy & food security prioritized regionally":["SSP3"],
+  "Diversified energy (both fossil & low-carbon)":["SSP4"],
+  "Exploitation of abundant fossil fuels":["SSP5"],
+  "Fossil fuel dependence":["SSP3","SSP5"],
+  "Respect for environmental boundaries":["SSP1"],
+  "Environmental degradation with some improvements":["SSP2"],
+  "Strong environmental degradation in some regions":["SSP3"],
+  "Env. policy focused on local/wealthy areas":["SSP4"],
+  "Local env. problems successfully managed":["SSP5"],
+  "Low international priority for environment":["SSP3"],
+  "Inclusive development path":["SSP1"],
+  "Historical trends continue (no major shifts)":["SSP2"],
+  "Challenges reducing vulnerability remain":["SSP2"],
+  "Development coupled with fossil exploitation":["SSP5"],
+  "Rapid technological progress":["SSP5"],
+  "High tech development in elite sectors":["SSP4"],
+  "Innovation-driven development":["SSP5"]
+};
+
+const ssps = ["SSP1","SSP2","SSP3","SSP4","SSP5"];
+
+const tIcon = {
+  up:'<span class="trend-icon" style="color:var(--green);font-size:8px;">&#9650;</span>',
+  down:'<span class="trend-icon" style="color:var(--red);font-size:8px;">&#9660;</span>',
+  stable:'<span class="trend-icon" style="color:var(--text-dim);font-size:8px;">&#9644;</span>'
+};
+
+let currentFilter = "all";
+
+function render() {
+  const unique = {}, sharedFor = {};
+  ssps.forEach(s => { unique[s] = []; sharedFor[s] = []; });
+
+  Object.entries(qualities).forEach(([q, list]) => {
+    if (list.length === 1) unique[list[0]].push(q);
+    else list.forEach(s => sharedFor[s].push({ quality: q, allSSPs: list }));
+  });
+
+  const scoreboard = {};
+  ssps.forEach(s => { scoreboard[s] = { up:0, down:0, stable:0, total:0 }; });
+  Object.entries(qualities).forEach(([q, list]) => {
+    const t = trends[q] || "stable";
+    list.forEach(s => { scoreboard[s][t]++; scoreboard[s].total++; });
+  });
+
+  const colsEl = document.getElementById("columns");
+  colsEl.innerHTML = "";
+
+  ssps.forEach(s => {
+    const sc = scoreboard[s];
+    const upPct = (sc.up/sc.total*100).toFixed(0);
+    const downPct = (sc.down/sc.total*100).toFixed(0);
+    const stPct = Math.max(0, 100 - upPct - downPct);
+
+    let html = `<div class="col">`;
+    html += `<div class="col-header"><div class="col-dot" style="background:${rawColors[s]}"></div><span class="col-name">${s}</span><span class="col-subtitle">${titles[s]}</span></div>`;
+    html += `<div class="col-scores"><span class="up">&#9650;${sc.up}</span><span class="down">&#9660;${sc.down}</span><span class="flat">&#9644;${sc.stable}</span></div>`;
+    html += `<div class="score-bar"><div class="seg" style="width:${upPct}%;background:var(--green);border-radius:2px 0 0 2px;"></div><div class="seg" style="width:${stPct}%;background:#2a2d33;"></div><div class="seg" style="width:${downPct}%;background:var(--red);border-radius:0 2px 2px 0;"></div></div>`;
+
+    let ri = 0;
+    unique[s].forEach(q => {
+      const t = trends[q] || "stable";
+      const match = currentFilter === "all" || currentFilter === t;
+      const cls = match ? (ri % 2 === 0 ? "qual-row alt" : "qual-row") : "qual-row dim";
+      html += `<div class="${cls}" data-trend="${t}">${tIcon[t]}<span class="qual-text">${q}</span></div>`;
+      ri++;
+    });
+
+    if (sharedFor[s].length > 0) {
+      html += `<div class="section-divider">Shared</div>`;
+      sharedFor[s].forEach(item => {
+        const t = trends[item.quality] || "stable";
+        const match = currentFilter === "all" || currentFilter === t;
+        const cls = match ? (ri % 2 === 0 ? "qual-row alt" : "qual-row") : "qual-row dim";
+        const dots = item.allSSPs.map(ss => `<div class="d" style="background:${rawColors[ss]}"></div>`).join("");
+        html += `<div class="${cls}" data-trend="${t}">${tIcon[t]}<span class="qual-text">${item.quality}</span><div class="dots-pair">${dots}</div></div>`;
+        ri++;
+      });
+    }
+    html += `</div>`;
+    colsEl.innerHTML += html;
+  });
+
+  // Summary
+  const sumEl = document.getElementById("summary");
+  let sh = `<div class="summary-title">Current trend alignment by SSP — which future is gaining momentum?</div><div class="summary-bars">`;
+  const sorted = ssps.slice().sort((a,b) => scoreboard[b].up/scoreboard[b].total - scoreboard[a].up/scoreboard[a].total);
+  sorted.forEach(s => {
+    const sc = scoreboard[s];
+    const upPct = (sc.up/sc.total*100).toFixed(0);
+    const downPct = (sc.down/sc.total*100).toFixed(0);
+    const stPct = Math.max(0, 100-upPct-downPct);
+    sh += `<div class="sbar-row"><span class="sbar-label" style="color:${rawColors[s]}">${s}</span><div class="sbar-track">`;
+    if (+upPct>0) sh += `<div class="sbar-fill up" style="flex:${upPct};">${upPct}%</div>`;
+    if (+stPct>0) sh += `<div class="sbar-fill stable" style="flex:${stPct};">${stPct}%</div>`;
+    if (+downPct>0) sh += `<div class="sbar-fill down" style="flex:${downPct};">${downPct}%</div>`;
+    sh += `</div></div>`;
+  });
+  sh += `</div>`;
+  sumEl.innerHTML = sh;
+}
+
+// Filter buttons
+document.getElementById("filters").addEventListener("click", e => {
+  const btn = e.target.closest(".filter-btn");
+  if (!btn) return;
+  currentFilter = btn.dataset.filter;
+  document.querySelectorAll(".filter-btn").forEach(b => b.classList.remove("active"));
+  btn.classList.add("active");
+  render();
+});
+
+// ── Country Spectrum ──────────────────────────────────────
+
+const countryData = [
+  {country:"Brazil", best:"SSP1", position:2.79, scores:{SSP1:.745,SSP2:.313,SSP3:.223,SSP4:.515,SSP5:.409}},
+  {country:"EU (Germany)", best:"SSP1", position:2.86, scores:{SSP1:.775,SSP2:.339,SSP3:.159,SSP4:.193,SSP5:.696}},
+  {country:"United States", best:"SSP5", position:3.01, scores:{SSP1:.602,SSP2:.474,SSP3:.398,SSP4:.387,SSP5:.656}},
+  {country:"China", best:"SSP3", position:3.13, scores:{SSP1:.418,SSP2:.487,SSP3:.588,SSP4:.488,SSP5:.586}},
+  {country:"Nigeria", best:"SSP3", position:3.19, scores:{SSP1:.285,SSP2:.343,SSP3:.710,SSP4:.519,SSP5:.407}},
+  {country:"India", best:"SSP5", position:3.24, scores:{SSP1:.399,SSP2:.382,SSP3:.634,SSP4:.469,SSP5:.655}},
+  {country:"Russia", best:"SSP3", position:3.28, scores:{SSP1:.344,SSP2:.429,SSP3:.706,SSP4:.518,SSP5:.669}},
+  {country:"Gulf States (KSA)", best:"SSP3", position:3.42, scores:{SSP1:.276,SSP2:.276,SSP3:.697,SSP4:.510,SSP5:.663}},
+];
+
+function renderSpectrum() {
+  const el = document.getElementById("spectrum");
+  let h = `<div class="spectrum-title">Where do countries currently sit on the SSP spectrum?</div>`;
+  h += `<div class="spectrum-subtitle">Composite alignment from 10 indicators: Gini, HDI, fossil share, governance, trade, renewables, GDP growth, EPI, military &amp; education spending</div>`;
+
+  h += `<div class="spectrum-bar">`;
+  ["SSP1","SSP2","SSP3","SSP4","SSP5"].forEach(s => {
+    h += `<div class="spectrum-zone" style="background:${rawColors[s]}">${s}</div>`;
+  });
+  h += `</div>`;
+  h += `<div class="spectrum-labels"><span>Sustainability</span><span>Middle road</span><span>Rivalry</span><span>Inequality</span><span>Fossil dev.</span></div>`;
+
+  h += `<div class="country-rows">`;
+  countryData.forEach(c => {
+    const bestColor = rawColors[c.best];
+    const pct = ((c.position - 1) / 4) * 100;
+
+    const sorted = Object.entries(c.scores).sort((a,b) => b[1] - a[1]);
+    const top1 = sorted[0];
+    const top2 = sorted[1];
+    const sspNum = {SSP1:1,SSP2:2,SSP3:3,SSP4:4,SSP5:5};
+    const leftSSP = Math.min(sspNum[top1[0]], sspNum[top2[0]]);
+    const rightSSP = Math.max(sspNum[top1[0]], sspNum[top2[0]]);
+    const rangeLeft = ((leftSSP - 1) / 4) * 100;
+    const rangeRight = ((rightSSP - 1) / 4) * 100;
+
+    const maxS = Math.max(...Object.values(c.scores));
+    let bars = "";
+    ["SSP1","SSP2","SSP3","SSP4","SSP5"].forEach(s => {
+      const barH = Math.round((c.scores[s] / maxS) * 20);
+      const op = s === c.best ? 1 : 0.3;
+      bars += `<div class="cs" style="height:${barH}px;background:${rawColors[s]};opacity:${op};"></div>`;
+    });
+
+    h += `<div class="country-row">`;
+    h += `<div class="country-name" style="color:${bestColor}">${c.country}</div>`;
+    h += `<div class="country-track">`;
+    h += `<div class="country-range" style="left:${rangeLeft}%;width:${rangeRight - rangeLeft}%;background:${bestColor};"></div>`;
+    h += `<div class="country-dot" style="left:${pct}%;background:${bestColor};"></div>`;
+    h += `</div>`;
+    h += `<div class="country-best" style="color:${bestColor}">${c.best}</div>`;
+    h += `<div class="country-scores">${bars}</div>`;
+    h += `</div>`;
+  });
+  h += `</div>`;
+
+  h += `<div class="spectrum-method">Methodology: 10 public indices normalized 0–1, weighted against SSP archetype profiles. Position = weighted centroid across SSP scores. Sources: World Bank, UNDP, V-Dem, Yale EPI, Our World in Data, SIPRI.</div>`;
+  el.innerHTML = h;
+}
+
+renderSpectrum();
+render();
+
+// ── Emissions Chart ──────────────────────────────────────
+
+const chartColors = {
+  SSP1: "#27ae60", SSP2: "#2980b9", SSP3: "#c0392b",
+  SSP4: "#8e44ad", SSP5: "#d35400",
+  Current: "#f1c40f", Historical: "#4a4d55"
+};
+
+const historical = [
+  [1990,38],[1995,40],[2000,44],[2005,49],[2010,52],[2015,55],[2019,59],[2020,53],[2021,56],[2022,57],[2023,57.5]
+];
+
+const sspProjections = {
+  SSP1: [[2023,57.5],[2025,51],[2030,43],[2040,28],[2050,15],[2075,2],[2100,-2]],
+  SSP2: [[2023,57.5],[2025,56],[2030,53],[2040,49],[2050,44],[2075,36],[2100,30]],
+  SSP3: [[2023,57.5],[2025,59],[2030,65],[2040,73],[2050,80],[2075,90],[2100,96]],
+  SSP4: [[2023,57.5],[2025,57],[2030,59],[2040,61],[2050,62],[2075,62],[2100,60]],
+  SSP5: [[2023,57.5],[2025,60],[2030,69],[2040,85],[2050,98],[2075,115],[2100,122]],
+  Current: [[2023,57.5],[2025,58.5],[2030,61],[2040,62],[2050,61],[2075,57],[2100,52]]
+};
+
+function renderChart() {
+  const W = 900, H = 300;
+  const PAD = { top: 22, right: 82, bottom: 36, left: 46 };
+  const plotW = W - PAD.left - PAD.right;
+  const plotH = H - PAD.top - PAD.bottom;
+  const yearMin = 1990, yearMax = 2100;
+  const emMin = -15, emMax = 130;
+
+  const xS = yr => PAD.left + (yr - yearMin) / (yearMax - yearMin) * plotW;
+  const yS = v  => PAD.top  + plotH - (v - emMin) / (emMax - emMin) * plotH;
+
+  const pts = arr => arr.map((p, i) => `${i===0?'M':'L'}${xS(p[0]).toFixed(1)},${yS(p[1]).toFixed(1)}`).join(' ');
+
+  let s = '';
+
+  // Grid lines + Y labels
+  [0, 20, 40, 60, 80, 100, 120].forEach(v => {
+    const y = yS(v).toFixed(1);
+    s += `<line x1="${PAD.left}" y1="${y}" x2="${(PAD.left+plotW).toFixed(1)}" y2="${y}" stroke="#1a1d22" stroke-width="1"/>`;
+    s += `<text x="${(PAD.left-5).toFixed(1)}" y="${(+y+3.5).toFixed(1)}" font-size="9" fill="#5a5754" text-anchor="end">${v}</text>`;
+  });
+
+  // Zero line
+  const z = yS(0).toFixed(1);
+  s += `<line x1="${PAD.left}" y1="${z}" x2="${(PAD.left+plotW).toFixed(1)}" y2="${z}" stroke="#2e3138" stroke-width="1"/>`;
+
+  // X axis labels
+  [1990, 2000, 2010, 2020, 2030, 2050, 2075, 2100].forEach(yr => {
+    const x = xS(yr).toFixed(1);
+    s += `<text x="${x}" y="${(PAD.top+plotH+14).toFixed(1)}" font-size="9" fill="#5a5754" text-anchor="middle">${yr}</text>`;
+  });
+
+  // 2023 divider
+  const dx = xS(2023).toFixed(1);
+  s += `<line x1="${dx}" y1="${PAD.top}" x2="${dx}" y2="${(PAD.top+plotH).toFixed(1)}" stroke="#2a2d33" stroke-width="1" stroke-dasharray="3,3"/>`;
+  s += `<text x="${(+dx+3).toFixed(1)}" y="${(PAD.top+9).toFixed(1)}" font-size="8" fill="#3a3834">2023</text>`;
+
+  // Historical line
+  s += `<path d="${pts(historical)}" fill="none" stroke="${chartColors.Historical}" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"/>`;
+
+  // SSP lines
+  ['SSP1','SSP2','SSP3','SSP4','SSP5'].forEach(key => {
+    s += `<path d="${pts(sspProjections[key])}" fill="none" stroke="${chartColors[key]}" stroke-width="1.8" stroke-linejoin="round" stroke-linecap="round"/>`;
+  });
+
+  // Current policy trajectory (dashed, slightly thicker)
+  s += `<path d="${pts(sspProjections.Current)}" fill="none" stroke="${chartColors.Current}" stroke-width="1.8" stroke-dasharray="5,3" stroke-linejoin="round" stroke-linecap="round"/>`;
+
+  // End-of-line labels
+  const endLabels = [
+    { key:'SSP5', label:'SSP5' }, { key:'SSP3', label:'SSP3' },
+    { key:'SSP4', label:'SSP4' }, { key:'Current', label:'Current' },
+    { key:'SSP2', label:'SSP2' }, { key:'SSP1', label:'SSP1' }
+  ];
+  endLabels.forEach(({ key, label }) => {
+    const last = sspProjections[key][sspProjections[key].length - 1];
+    s += `<text x="${(xS(last[0])+5).toFixed(1)}" y="${(yS(last[1])+3.5).toFixed(1)}" font-size="9.5" fill="${chartColors[key]}" font-weight="600">${label}</text>`;
+  });
+
+  // Y axis label
+  const lx = (PAD.left - 34).toFixed(1);
+  const ly = (PAD.top + plotH / 2).toFixed(1);
+  s += `<text x="${lx}" y="${ly}" font-size="9" fill="#5a5754" text-anchor="middle" transform="rotate(-90 ${lx} ${ly})">GtCO₂eq / yr</text>`;
+
+  document.getElementById("emissions-svg").innerHTML = s;
+
+  // Legend
+  const legendItems = [
+    { label: 'Historical', color: chartColors.Historical, dashed: false },
+    { label: 'SSP1 – Sustainability', color: chartColors.SSP1, dashed: false },
+    { label: 'SSP2 – Middle of road', color: chartColors.SSP2, dashed: false },
+    { label: 'SSP3 – Regional rivalry', color: chartColors.SSP3, dashed: false },
+    { label: 'SSP4 – Inequality', color: chartColors.SSP4, dashed: false },
+    { label: 'SSP5 – Fossil-fueled dev.', color: chartColors.SSP5, dashed: false },
+    { label: 'Current policy trajectory (IEA WEO 2024)', color: chartColors.Current, dashed: true }
+  ];
+  document.getElementById("chart-legend").innerHTML = legendItems.map(item =>
+    `<div class="chart-legend-item">
+      <svg width="22" height="10" style="flex-shrink:0">
+        <line x1="0" y1="5" x2="22" y2="5" stroke="${item.color}" stroke-width="2" ${item.dashed ? 'stroke-dasharray="4,2"' : ''}/>
+      </svg>
+      <span>${item.label}</span>
+    </div>`
+  ).join('');
+}
+
+renderChart();
+</script>
+</body>
+</html>

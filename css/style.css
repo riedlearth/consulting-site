@@ -379,6 +379,54 @@ img {
 }
 
 
+/* ── Interactive Viz Feature Link ────────────────────────── */
+
+.viz-feature {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1rem 1.25rem;
+  margin-bottom: 2rem;
+  border: 1px solid var(--color-rule);
+  border-radius: 4px;
+  text-decoration: none;
+  transition: background 0.2s, border-color 0.2s;
+}
+
+.viz-feature:hover {
+  background: var(--color-paper-alt);
+  border-color: var(--color-ink-faint);
+}
+
+.viz-feature-label {
+  font-size: 0.68rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--color-ink-faint);
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.viz-feature-title {
+  font-family: var(--font-display);
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--color-ink);
+  flex: 1;
+}
+
+.viz-feature-arrow {
+  font-size: 1rem;
+  color: var(--color-ink-faint);
+  flex-shrink: 0;
+  transition: color 0.2s;
+}
+
+.viz-feature:hover .viz-feature-arrow {
+  color: var(--color-ink);
+}
+
+
 /* ── Maps Grid ────────────────────────────────────────────── */
 
 .map-grid {
